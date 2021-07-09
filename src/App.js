@@ -1,8 +1,8 @@
-import logo from './logo.svg';
+import Tasks from "./components/Tasks/Tasks";
 
 function App() {
   return (
-    <h1>React</h1>
+    <Tasks />
   );
 }
 
