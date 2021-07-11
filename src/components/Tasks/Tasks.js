@@ -2,16 +2,45 @@ import React from 'react';
 import "./Tasks.css";
 import Collapsible from "../Collapsible/Collapsible";
 import { useState } from "react";
+import actions from "../../actions";
+import { useSelector, useDispatch } from "react-redux";
+import { toDisplayableDateFormat } from "../../utils/";
 
 function Tasks() {
+//get state from redux store
+let tasks = useSelector(state => state.tasks);
+
+//state
+let [ taskTitle, setTaskTitle ] = useState("");
+let [ taskDateTime, setTaskDateTime ] = useState("");
 let [ isNewTaskOpen, setIsNewTaskOpen ] = useState(false);
 
+//create dispatch function
+let dispatch = useDispatch();
+
 let onSaveClick = () => {
+    //dispatch
+    dispatch(actions.createTask({
+    id: Math.floor(Math.random() * 10000000),
+    taskTitle: taskTitle,
+    taskDateTime: taskDateTime
+    }));
+
+    //clear
+    setTaskTitle("");
+    setTaskDateTime("");
     setIsNewTaskOpen(!isNewTaskOpen);
 };
 
 let onCancelClick = () => {
     setIsNewTaskOpen(!isNewTaskOpen);
+};
+
+let onDeleteClick = (task)  => {
+    if (window.confirm("Are you sure to delete this task"))
+    {
+    dispatch(actions.deleteTask(task.id));
+    }
 };
 
 return (
@@ -39,7 +68,7 @@ return (
             <div className="form-group">
             <label className="form-label" htmlFor="task-title">Task Title:</label>
             <div className="form-input">
-                <input type="text" placeholder="Task Title" className="text-box" id="task-title" />
+                <input type="text" placeholder="Task Title" className="text-box" id="task-title" value={taskTitle} onChange={(event) => { setTaskTitle(event.target.value)}} />
             </div>
             
             </div>
@@ -49,7 +78,7 @@ return (
             <div className="form-group">
             <label className="form-label" htmlFor="task-date-time">Task Date and Time:</label>
             <div className="form-input">
-                <input type="datetime-local" placeholder="Task Date and Time" className="text-box" id="task-date-time" />
+                <input type="datetime-local" placeholder="Task Date and Time" className="text-box" id="task-date-time" value={taskDateTime} onChange={(event) => { setTaskDateTime(event.target.value)}} />
             </div>
             </div>
             {/* form group ends */}
@@ -76,40 +105,23 @@ return (
         <div className="content-body">
 
         {/* task starts */}
-        <div className="task">
+        {tasks.map(task => <div className="task" key={task.id}>
             <div className="task-body">
             <div className="task-title">
                 <i className="fa fa-thumbtack"></i>
-                <span className="task-title-text">Bob's Appointment</span>
+                <span className="task-title-text">{task.taskTitle}</span>
             </div>
             <div className="task-subtitle">
-                <i className="far fa-clock"></i> <span className="task-subtitle-text">Jul 16th at 9:30am</span>
+                <i className="far fa-clock"></i> <span className="task-subtitle-text">{toDisplayableDateFormat(task.taskDateTime)}</span>
             </div>
             </div>
 
             <div className="task-options">
-            <button className="icon-button" title="Delete">&times;</button>
+            <button className="icon-button" title="Delete" onClick={() => { onDeleteClick(task); }}>&times;</button>
             </div>
-        </div>
+        </div>)}
         {/* task ends */}
 
-        {/* task starts */}
-        <div className="task">
-            <div className="task-body">
-            <div className="task-title">
-                <i className="fa fa-thumbtack"></i>
-                <span className="task-title-text">Project Presentation</span>
-            </div>
-            <div className="task-subtitle">
-                <i className="far fa-clock"></i> <span className="task-subtitle-text">Jul 17th at 11:15am</span>
-            </div>
-            </div>
-
-            <div className="task-options">
-            <button className="icon-button" title="Delete">&times;</button>
-            </div>
-        </div>
-        {/* task ends */}
         </div>
     </div>
     </div>
