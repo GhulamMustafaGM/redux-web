@@ -3,14 +3,18 @@ import * as actionTypes from "../constants/action-types";
 
 //reducer is a function that receives an action and returns new state.
 export const tasksReducer = (state = initialTasks, action) => {
-    switch (action.type) {
-        case actionTypes.CREATE_TASK:
-            return [...state, action.payload];
+switch (action.type)
+{
+    case actionTypes.FETCH_TASKS:
+    return action.payload;
 
-        case actionTypes.DELETE_TASK:
-            return state.filter(task => task.id !== action.payload);
+    case actionTypes.CREATE_TASK:
+    return [ ...state, action.payload];
+    
+    case actionTypes.DELETE_TASK:
+    return state.filter(task => task.id !== action.payload);
 
-        default:
-            return state;
-    }
+    default:
+    return state;
+}
 };
