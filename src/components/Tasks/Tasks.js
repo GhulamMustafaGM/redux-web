@@ -1,7 +1,7 @@
 import React from 'react';
 import "./Tasks.css";
 import Collapsible from "../Collapsible/Collapsible";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import actions from "../../actions";
 import { useSelector, useDispatch } from "react-redux";
 import { toDisplayableDateFormat } from "../../utils/";
@@ -13,13 +13,22 @@ let [ taskDateTime, setTaskDateTime ] = useState("");
 let [ isNewTaskOpen, setIsNewTaskOpen ] = useState(false);
 let [ search, setSearch ] = useState("");
 
-//get state from redux store
-let tasks = useSelector(state => state.tasks);
-let filteredTasks = tasks.filter(task => 
-    task.taskTitle.toLowerCase().indexOf(search.toLowerCase()) >= 0);
-
 //create dispatch function
 let dispatch = useDispatch();
+
+//run on first render
+useEffect(() => {
+    dispatch(actions.fetchTasks());
+}, [dispatch]);
+
+//get state from redux store
+let tasks = useSelector(state => state.tasks);
+let filteredTasks = [];
+if (tasks && tasks.data.length > 0)
+{
+    filteredTasks = tasks.data.filter(task => 
+    task.taskTitle.toLowerCase().indexOf(search.toLowerCase()) >= 0);
+}
 
 let onSaveClick = () => {
     //dispatch
@@ -51,7 +60,11 @@ return (
     <div className="container">
         <div className="app-title-container">
         <div className="app-title">
-            <h1>Tasks</h1>
+            <h1>Tasks&nbsp;
+            {tasks.loading? <i className="fas fa-spinner fa-spin"></i>: ""}
+            </h1>
+
+            {tasks.error? <h2>{tasks.error.message}</h2>: ""}
         </div>
 
         <div className="create-button-container">
