@@ -6,25 +6,21 @@ import actions from "../../actions";
 import { connect } from "react-redux";
 import { toDisplayableDateFormat } from "../../utils/";
 
-function Tasks(props) {
-
-console.log(props);
+function Tasks({ tasks, dispatchFetchTasks, dispatchCreateTask, dispatchDeleteTask }) {
 
 //state
 let [ taskTitle, setTaskTitle ] = useState("");
 let [ taskDateTime, setTaskDateTime ] = useState("");
 let [ isNewTaskOpen, setIsNewTaskOpen ] = useState(false);
 let [ search, setSearch ] = useState("");
-let { dispatch } = props;
 
 //run on first render
 useEffect(() => {
-    dispatch(actions.fetchTasks());
-}, [ dispatch  ]);
+    //dispatch(actions.fetchTasks());
+    dispatchFetchTasks();
+}, [ dispatchFetchTasks  ]);
 
 //get state from redux store
-let tasks = props.tasks;
-
 let filteredTasks = [];
 if (tasks && tasks.data.length > 0)
 {
@@ -34,11 +30,11 @@ if (tasks && tasks.data.length > 0)
 
 let onSaveClick = () => {
     //dispatch
-    dispatch(actions.createTask({
+    dispatchCreateTask({
     id: Math.floor(Math.random() * 10000000),
     taskTitle: taskTitle,
     taskDateTime: taskDateTime
-    }));
+    });
 
     //clear
     setTaskTitle("");
@@ -53,7 +49,7 @@ let onCancelClick = () => {
 let onDeleteClick = (task)  => {
     if (window.confirm("Are you sure to delete this task"))
     {
-    dispatch(actions.deleteTask(task.id));
+    dispatchDeleteTask(task.id);
     }
 };
 
@@ -146,10 +142,14 @@ return (
 )
 }
 
-const mapStateToProps = (state) => {
-return {
-    tasks: state.tasks
-};
+const mapStateToProps = (state) => ({
+tasks: state.tasks
+});
+
+const mapDispatchToProps = {
+dispatchFetchTasks: actions.fetchTasks,
+dispatchCreateTask: actions.createTask,
+dispatchDeleteTask: actions.deleteTask
 };
 
-export default connect(mapStateToProps)(Tasks);
+export default connect(mapStateToProps, mapDispatchToProps)(Tasks);
