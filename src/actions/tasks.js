@@ -26,7 +26,7 @@ export const fetchTasks = () => async (dispatch) => {
 export const createTask = (newTask) => async (dispatch) => {
 
     //dispatch response data to CREATE_TASK_REQUEST action; it will be received by the reducer
-    dispatch({ type: actionTypes.CREATE_TASK_REQUEST });
+    dispatch({ type: actionTypes.CREATE_TASK_REQUEST, payload: newTask });
     try {
         var response = await axios.post("http://localhost:7000/tasks", newTask);
 
